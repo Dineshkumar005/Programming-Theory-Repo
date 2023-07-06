@@ -11,6 +11,9 @@ public class PowerUpCrate : Crate
 
     public override void OnDestroy()
     {
-        Instantiate(spawnPrefab, transform.position, Quaternion.identity);
+        if (!isQuitting)
+        {
+            Instantiate(spawnPrefab, transform.position, Quaternion.identity);
+        }
     }
 }

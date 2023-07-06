@@ -10,6 +10,9 @@ public class EmptyCrate : Crate
 
     public override void OnDestroy()
     {
+        if (!isQuitting)
+        {
 
+        }
     }
 }

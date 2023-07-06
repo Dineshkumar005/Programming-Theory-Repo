@@ -6,12 +6,18 @@ public abstract class Crate : MonoBehaviour
 {
     public int hitPoints;
     public GameObject spawnPrefab;
+    public bool isQuitting = false;
 
     public void DamageTaken(int damage)
     {
         hitPoints -= damage;
-        if(hitPoints<=0)
+        if (hitPoints <= 0)
             Destroy(gameObject);
+    }
+
+    private void OnApplicationQuit()
+    {
+        isQuitting = true;
     }
 
     public abstract void OnDestroy();

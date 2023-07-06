@@ -4,7 +4,9 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Animal
+  - Crate
+  - PowerUp
+  - Coin
   layers:
   - Default
   - TransparentFX

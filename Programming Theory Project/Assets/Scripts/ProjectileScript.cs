@@ -6,10 +6,23 @@ public class ProjectileScript : MonoBehaviour
 {
     public float speed;
     public int damage;
-    
-    void Update()
-    {
-        transform.Translate(transform.forward * speed);
+    public float lifeSpan;
+    private Rigidbody rb;
+    public float defaultDistance=250f;
+
+    private void Start() {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        
+        if (Physics.Raycast(ray, out hit,defaultDistance))
+            transform.LookAt(hit.point);
+        else
+            transform.LookAt(ray.origin+ray.direction*defaultDistance);
+
+        rb=GetComponent<Rigidbody>();
+
+        Destroy(gameObject, lifeSpan);
+        rb.AddForce(transform.forward * speed, ForceMode.VelocityChange);
     }
 
     private void OnCollisionEnter(Collision other) {
@@ -17,5 +30,6 @@ public class ProjectileScript : MonoBehaviour
         {
             other.gameObject.GetComponent<Crate>().DamageTaken(damage);
         }
+        Destroy(gameObject);
     }
 }
