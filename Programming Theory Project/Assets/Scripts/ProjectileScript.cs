@@ -4,32 +4,26 @@ using UnityEngine;
 
 public class ProjectileScript : MonoBehaviour
 {
-    public float speed;
+    public float radius;
     public int damage;
-    public float lifeSpan;
     private Rigidbody rb;
-    public float defaultDistance=250f;
 
-    private void Start() {
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        
-        if (Physics.Raycast(ray, out hit,defaultDistance))
-            transform.LookAt(hit.point);
-        else
-            transform.LookAt(ray.origin+ray.direction*defaultDistance);
-
-        rb=GetComponent<Rigidbody>();
-
-        Destroy(gameObject, lifeSpan);
-        rb.AddForce(transform.forward * speed, ForceMode.VelocityChange);
-    }
 
     private void OnCollisionEnter(Collision other) {
-        if(other.collider.CompareTag("Crate"))
+        Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
+        foreach(Collider collider in colliders)
         {
-            other.gameObject.GetComponent<Crate>().DamageTaken(damage);
+            if(collider.CompareTag("Crate"))
+            {
+                collider.gameObject.GetComponent<Crate>().DamageTaken(damage);
+            }
         }
-        Destroy(gameObject);
+        gameObject.SetActive(false);
+    }
+
+
+    void OnDisable() {
+        rb=GetComponent<Rigidbody>();
+        rb.velocity=Vector3.zero;
     }
 }

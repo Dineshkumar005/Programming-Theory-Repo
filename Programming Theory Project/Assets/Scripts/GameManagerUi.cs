@@ -22,10 +22,11 @@ public class GameManagerUi : MonoBehaviour
     private void Start() {
         gameManager = GameObject.FindObjectOfType<GameManager>().GetComponent<GameManager>();
     }
-    
+
     public void Pause()
     {
-        GameManager.isGamePaused = true;
+        Cursor.lockState = CursorLockMode.None;
+        gameManager.isGamePaused = true;
         Time.timeScale = 0;
         pauseBtn.gameObject.SetActive(false);
         pauseMenu.SetActive(true);
@@ -34,7 +35,7 @@ public class GameManagerUi : MonoBehaviour
     public void Resume()
     {
         Time.timeScale = 1;
-        GameManager.isGamePaused = false;
+        gameManager.isGamePaused = false;
         pauseMenu.SetActive(false);
         pauseBtn.gameObject.SetActive(true);
     }

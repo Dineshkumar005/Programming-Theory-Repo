@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class PowerUpCrate : Crate
 {
-    private void Start()
+    public override void OnEnable()
     {
         hitPoints = 40;
     }
 
-    public override void OnDestroy()
+    public override void OnDisable()
     {
-        if (!isQuitting)
+        if (isOld)
         {
-            Instantiate(spawnPrefab, transform.position, Quaternion.identity);
+            GameObject obj = ObjectPooler.SharedInstance.GetPooledObject(spawnPrefab.name);
+            obj.transform.position = transform.position;
+            obj.SetActive(true);
         }
+        else
+            isOld = true;
     }
 }

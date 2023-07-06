@@ -4,15 +4,24 @@ using UnityEngine;
 
 public class SelfDestroy : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    public float lifeTime = 5f;
+    public bool isAutoDestroyEnabled = false;
+    private void OnEnable() {
+        if(isAutoDestroyEnabled)
+            Invoke("Disable",lifeTime);
     }
 
-    // Update is called once per frame
-    void Update()
+    void EndLife(float lifeSpan)
     {
-        
+        Invoke("Disable",lifeSpan);
+    }
+
+    void Disable()
+    {
+        gameObject.SetActive(false);
+    }
+
+    private void OnDestroy() {
+        CancelInvoke("Disable");
     }
 }

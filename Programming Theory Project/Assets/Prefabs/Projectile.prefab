@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3784237097757845113}
   - component: {fileID: 3128079752494866570}
   - component: {fileID: 4243070876505020080}
+  - component: {fileID: 4583080148178818908}
   m_Layer: 0
   m_Name: Projectile
   m_TagString: Untagged
@@ -30,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 6795717971922770244}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 2, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.5}
+  m_LocalScale: {x: 0.15217863, y: 0.15217863, z: 0.76089317}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -127,7 +128,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c57b28231a2496d4782ba7de580c8f68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 25
+  radius: 0.5
   damage: 100
-  lifeSpan: 1
-  defaultDistance: 25
+--- !u!114 &4583080148178818908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6795717971922770244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c6497aa6bd09be42bad0411c8a1d445, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifeTime: 10
+  isAutoDestroyEnabled: 1

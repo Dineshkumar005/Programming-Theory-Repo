@@ -6,23 +6,21 @@ public class DangerCrate : Crate
 {
     public float radius;
     public float explosionForce;
-    private void Start()
+    public override void OnEnable()
     {
         hitPoints = 10;
     }
 
-    public override void OnDestroy()
+    public override void OnDisable()
     {
-        if (!isQuitting)
+        Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
+        foreach (var item in colliders)
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
-            foreach (var item in colliders)
+            if (item.gameObject.CompareTag("Crate"))
             {
-                if (item.gameObject.CompareTag("Crate"))
-                {
-                    item.GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, radius);
-                    Destroy(item.gameObject, 1f);
-                }
+                item.GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, radius);
+                item.GetComponent<SelfDestroy>().StartCoroutine("EndLife", 1);
+                item.gameObject.SetActive(false);
             }
         }
     }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [Header("Game Mechanics")]
-    public GameObject[] cratePrefabs;
+    public CratePrefab[] cratePrefabs;
     public float intialTime;
     public float bonusTime;
     public int score;
@@ -14,24 +14,22 @@ public class GameManager : MonoBehaviour
 
     private int waveNo = 1;
     private float timer=0;
-    private float maxTime;
     private GameManagerUi gameManagerUi;
     
-    public static bool isGameOver=false;
-    public static bool isGamePaused = false;
+    public bool isGameOver=false;
+    public bool isGamePaused = false;
 
     private void Start() {
         gameManagerUi = GameObject.FindObjectOfType<GameManagerUi>().GetComponent<GameManagerUi>();
-        maxTime = intialTime;
+        timer= intialTime;
         AddScore(0);
-        SpawnCrates(0);
     }
 
     private void Update() {
-        timer += Time.deltaTime;
+        timer -= Time.deltaTime;
         gameManagerUi.timerText.text = Mathf.FloorToInt(timer).ToString();
 
-        if (timer >= maxTime)
+        if (timer <0)
         {
             isGameOver = true;
             gameManagerUi.GameOver();
@@ -41,10 +39,10 @@ public class GameManager : MonoBehaviour
         if(count<=0)
         {
             foreach(var obj in GameObject.FindGameObjectsWithTag("Crate")){
-                Destroy(obj);
+                obj.gameObject.SetActive(false);
             }
 
-            maxTime += bonusTime;
+            timer += bonusTime;
             SpawnCrates(waveNo);
             waveNo++;
         }
@@ -56,19 +54,20 @@ public class GameManager : MonoBehaviour
 
     void SpawnCrates(int wave)
     {
-        SpawnObject(cratePrefabs[0],Random.Range(15,25+wave));
-        SpawnObject(cratePrefabs[1],Random.Range(20,25+wave));
-        SpawnObject(cratePrefabs[2], Random.Range(2, 4 + wave));
-        SpawnObject(cratePrefabs[3], Random.Range(3, 7 + wave));
+        foreach(CratePrefab cratePrefab in cratePrefabs)
+        {
+            SpawnObject(cratePrefab.prefab,Mathf.FloorToInt(Random.Range(cratePrefab.min,cratePrefab.Max+wave)));
+        }
     }
 
     void SpawnObject(GameObject prefab,int n)
     {
         for(int i=0;i<n;i++){
-            Instantiate(prefab, GenerateRandomPosition(),Random.rotation);
+            GameObject obj= ObjectPooler.SharedInstance.GetPooledObject(prefab.name);
+            obj.SetActive(true);
+            obj.transform.position = GenerateRandomPosition();
         }
     }
-
     Vector3 GenerateRandomPosition()
     {
         return new Vector3(Random.Range(-xRange, xRange), 1, Random.Range(-zRange, zRange));
@@ -78,5 +77,13 @@ public class GameManager : MonoBehaviour
     {
         score += value;
         gameManagerUi.scoreText.text = "Score : " + score;
+    }
+
+    [System.Serializable]
+    public class CratePrefab
+    {
+        public GameObject prefab;
+        public float min;
+        public float Max;
     }
 }

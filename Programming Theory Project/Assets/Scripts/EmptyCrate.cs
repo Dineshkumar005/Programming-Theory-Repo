@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class EmptyCrate : Crate
 {
-    private void Start() {
+    public override void OnEnable() {
         hitPoints = 15;
     }
 
-    public override void OnDestroy()
+    public override void OnDisable()
     {
-        if (!isQuitting)
-        {
-
-        }
     }
 }

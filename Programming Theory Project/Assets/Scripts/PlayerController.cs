@@ -21,12 +21,15 @@ public class PlayerController : MonoBehaviour
     public Transform fireInitPos;
     public float rateOfFire;
     private float rofCounter;
+    public float projectileVelocity=25;
+    private float maxDistance=999f;
+    private float defaultDistance=25f;
 
     
     [Header("Special Attacks")]
     public float magnetDuration;
     public float magnetRadius;
-    public static PowerupType currentPowerUpType = PowerupType.None;
+    public PowerupType currentPowerUpType = PowerupType.None;
     private Coroutine magnetCoroutine;
 
 
@@ -41,7 +44,8 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(1) && !GameManager.isGameOver && !GameManager.isGamePaused)
+
+        if (Input.GetMouseButtonDown(1) && !gameManager.isGameOver && !gameManager.isGamePaused)
         {
             if(Cursor.lockState == CursorLockMode.None)
                 Cursor.lockState = CursorLockMode.Locked;
@@ -52,11 +56,11 @@ public class PlayerController : MonoBehaviour
         if(Input.GetMouseButton(0) && Cursor.lockState==CursorLockMode.Locked)
             Fire();
 
-        if(!GameManager.isGameOver)
+        if(!gameManager.isGameOver && !gameManager.isGamePaused)
         {
             MyInput();
-            SpeedControl();
         }
+        SpeedControl();
         CheckBoundary();
     }
 
@@ -114,7 +118,11 @@ public class PlayerController : MonoBehaviour
         rofCounter += Time.deltaTime;
         if (rofCounter > rateOfFire)
         {
-            Instantiate(projectilePrefab, fireInitPos.position,Quaternion.identity);
+            GameObject obj = ObjectPooler.SharedInstance.GetPooledObject(projectilePrefab.name);
+            obj.SetActive(true);
+            obj.transform.position=fireInitPos.position;
+            obj.transform.LookAt(Rays());
+            obj.GetComponent<Rigidbody>().AddForce(obj.transform.forward * projectileVelocity, ForceMode.VelocityChange);
             rofCounter = 0;
         }
     }
@@ -122,9 +130,8 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other) {
 
         if(other.CompareTag("Coin"))
-        {
             gameManager.AddScore(5);
-        }
+        
         else if(other.CompareTag("PowerUp"))
         {
             currentPowerUpType=other.GetComponent<PowerUp>().powerupType;
@@ -135,6 +142,7 @@ public class PlayerController : MonoBehaviour
                 {
                     if(magnetCoroutine !=null)
                         StopCoroutine(magnetCoroutine);
+
                     magnetCoroutine= StartCoroutine(Magnet());
                     break;
                 }
@@ -145,12 +153,27 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        Destroy(other.gameObject);
+        other.gameObject.SetActive(false);
+    }
+
+    public  Vector3 Rays()
+    {
+        RaycastHit hit;   
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        
+        if (Physics.Raycast(ray, out hit,maxDistance)){
+            return hit.point;
+        }
+        else{
+            Vector3 point=ray.origin+ray.direction*defaultDistance;
+            return point;
+        }
     }
 
 
     IEnumerator Magnet()
     {
+        Debug.Log("Magnet");
         float counter=0;
         while(counter<=magnetDuration)
         {
