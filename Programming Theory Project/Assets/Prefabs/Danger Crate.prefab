@@ -131,8 +131,8 @@ MonoBehaviour:
   hitPoints: 0
   spawnPrefab: {fileID: 0}
   isOld: 0
-  radius: 5
-  explosionForce: 1000
+  radius: 8
+  explosionForce: 5000
 --- !u!114 &1402418606400165955
 MonoBehaviour:
   m_ObjectHideFlags: 0

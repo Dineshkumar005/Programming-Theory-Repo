@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     private float horizontalInput;
     private float mouseX;
     private float mouseY;
+    private float defaultSpeedMultiplier=10f;
+    private bool isMultiplierActive =false;
 
 
     [Header("Attack")]
@@ -41,7 +43,7 @@ public class PlayerController : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
-    // Update is called once per frame
+    //Abstraction
     void Update()
     {
 
@@ -55,6 +57,8 @@ public class PlayerController : MonoBehaviour
 
         if(Input.GetMouseButton(0) && Cursor.lockState==CursorLockMode.Locked)
             Fire();
+
+        isMultiplierActive = Input.GetKey(KeyCode.LeftShift);
 
         if(!gameManager.isGameOver && !gameManager.isGamePaused)
         {
@@ -70,7 +74,11 @@ public class PlayerController : MonoBehaviour
         horizontalInput = Input.GetAxis("Horizontal");
 
         Vector3 direction = transform.forward * verticalInput + transform.right * horizontalInput;
-        playerRb.AddForce(direction.normalized * movementSpeed * 10f, ForceMode.Force);
+
+        if(isMultiplierActive)
+            playerRb.AddForce(direction.normalized * movementSpeed * defaultSpeedMultiplier * 2, ForceMode.Force);
+        else
+            playerRb.AddForce(direction.normalized * movementSpeed * defaultSpeedMultiplier, ForceMode.Force);
 
 
         if(Cursor.lockState==CursorLockMode.Locked)
@@ -90,14 +98,17 @@ public class PlayerController : MonoBehaviour
 
     void SpeedControl()
     {
+        float currentMaxSpeed= isMultiplierActive ? movementSpeed*2 : movementSpeed;
+
         Vector3 flatVel = new Vector3(playerRb.velocity.x, 0f, playerRb.velocity.z);
-        if(flatVel.magnitude>movementSpeed)
+        if(flatVel.magnitude>currentMaxSpeed)
         {
-            Vector3 limitVel = flatVel.normalized * movementSpeed;
+            Vector3 limitVel = flatVel.normalized * currentMaxSpeed;
+
+            //reset velocity with max speed
             playerRb.velocity = new Vector3(limitVel.x, playerRb.velocity.y, limitVel.z);
         }
     }
-
     void CheckBoundary()
     {
         Vector3 newPosition = transform.position;
@@ -120,18 +131,19 @@ public class PlayerController : MonoBehaviour
         {
             GameObject obj = ObjectPooler.SharedInstance.GetPooledObject(projectilePrefab.name);
             obj.SetActive(true);
+
             obj.transform.position=fireInitPos.position;
             obj.transform.LookAt(Rays());
+
             obj.GetComponent<Rigidbody>().AddForce(obj.transform.forward * projectileVelocity, ForceMode.VelocityChange);
             rofCounter = 0;
         }
     }
 
     private void OnTriggerEnter(Collider other) {
-
         if(other.CompareTag("Coin"))
             gameManager.AddScore(5);
-        
+
         else if(other.CompareTag("PowerUp"))
         {
             currentPowerUpType=other.GetComponent<PowerUp>().powerupType;
@@ -152,7 +164,6 @@ public class PlayerController : MonoBehaviour
                     }
             }
         }
-
         other.gameObject.SetActive(false);
     }
 
@@ -160,7 +171,7 @@ public class PlayerController : MonoBehaviour
     {
         RaycastHit hit;   
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        
+    
         if (Physics.Raycast(ray, out hit,maxDistance)){
             return hit.point;
         }
@@ -173,11 +184,11 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator Magnet()
     {
-        Debug.Log("Magnet");
         float counter=0;
         while(counter<=magnetDuration)
         {
             counter+=Time.deltaTime;
+
             Collider[] colliders=Physics.OverlapSphere(transform.position,magnetRadius);
             
             foreach(Collider collider in colliders)
@@ -185,6 +196,7 @@ public class PlayerController : MonoBehaviour
                 if(collider.CompareTag("Coin"))
                 {
                     CoinScript cs = collider.GetComponent<CoinScript>();
+
                     if(!cs.isFollowing)
                         cs.StartCoroutine("FollowPlayer");
                 }

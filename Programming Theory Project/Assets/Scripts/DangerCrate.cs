@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Inheritance
 public class DangerCrate : Crate
 {
     public float radius;
@@ -11,6 +12,7 @@ public class DangerCrate : Crate
         hitPoints = 10;
     }
 
+    //Polymorphism
     public override void OnDisable()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius);

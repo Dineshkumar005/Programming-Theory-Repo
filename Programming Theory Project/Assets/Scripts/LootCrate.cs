@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Inheritance
 public class LootCrate : Crate
 {
     public override void OnEnable()
@@ -9,6 +10,7 @@ public class LootCrate : Crate
         hitPoints = 25;
     }
 
+    //Polymorphism
     public override void OnDisable()
     {
         if(isOld){

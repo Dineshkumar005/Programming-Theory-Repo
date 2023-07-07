@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public bool isGamePaused = false;
 
     private void Start() {
+        Time.timeScale = 1;
         gameManagerUi = GameObject.FindObjectOfType<GameManagerUi>().GetComponent<GameManagerUi>();
         timer= intialTime;
         AddScore(0);

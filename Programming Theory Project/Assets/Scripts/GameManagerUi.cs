@@ -16,6 +16,7 @@ public class GameManagerUi : MonoBehaviour
     public GameObject pauseMenu;
     public GameObject gameUi;
     public GameObject gameOverUi;
+    public GameObject centerPoint;
 
     private GameManager gameManager;
 
@@ -56,11 +57,16 @@ public class GameManagerUi : MonoBehaviour
 
     public void GameOver()
     {
+        if(gameManager.score>MainManager.Instance.highScoreData.highScore)
+        {
+            MainManager.Instance.SaveData(gameManager.score);
+        }
         Cursor.lockState = CursorLockMode.None;
         pauseBtn.gameObject.SetActive(false);
         gameUi.SetActive(false);
         gameOverUi.SetActive(true);
-        scoreTxtGo.text = "score : " + gameManager.score;
+        scoreTxtGo.text = "Your Score<br><b><size=25>"+MainManager.Instance.playerName +" : "+gameManager.score+"</size> </b>";
+        highScoreText.text="High Score<br><b><size=25>"+MainManager.Instance.highScoreData.playerName +" : "+MainManager.Instance.highScoreData.highScore+"</size> </b>";
     }
     public void Restart()
     {
